@@ -1,0 +1,132 @@
+openapi: 3.0.3
+info:
+  title: Documentation for Zolochivska A.
+  description: |-
+    API for managing personal notes and file uploads.
+  version: 1.0.0
+servers:
+  - url: http://localhost:4000
+tags:
+  - name: Notes
+    description: Operations for handling notes
+  - name: Forms
+    description: HTML forms for interactions
+paths:
+  /UploadForm.html:
+    get:
+      tags:
+        - Forms
+      summary: Retrieve the HTML form for note uploads
+      responses:
+        '200':
+          description: Form retrieved successfully
+          content:
+            text/html:
+              schema:
+                type: string
+  /notes:
+    get:
+      tags:
+        - Notes
+      summary: Fetch all notes
+      operationId: getAllNotes
+      responses:
+        '200':
+          description: Successfully fetched all notes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/notesList'
+  /create-note:
+    post:
+      tags:
+        - Notes
+      summary: Create a new note
+      description: Allows the user to create a new note with a title and content.
+      requestBody:
+        content: 
+          application/json: 
+            schema:
+              type: object
+              properties:
+                note_title:
+                  type: string
+                  example: "My new note"
+                note_content:
+                  type: string
+                  example: "Here is the content of my note."
+      responses:
+        '201':
+          description: Note created successfully
+        '400':
+          description: Invalid request, missing fields or incorrect data
+  /notes/{title}:
+    get:
+      tags:
+        - Notes
+      summary: Retrieve the content of a specific note
+      parameters:
+        - name: title
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully fetched the note content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/note'
+        '404':
+          description: Note not found
+    put:
+      tags:
+        - Notes
+      summary: Update an existing note's content
+      parameters:
+        - name: title
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: string
+      responses:
+        '200':
+          description: Note updated successfully
+        '404':
+          description: Note not found
+    delete:
+      tags:
+        - Notes
+      summary: Delete a specific note
+      parameters:
+        - name: title
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Note deleted successfully
+        '404':
+          description: Note not found
+components:
+  schemas:
+    note:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Sample Note Title"
+        content:
+          type: string
+          example: "This is the content of the note."
+    notesList:
+      type: array
+      items:
+        $ref: '#/components/schemas/note'
